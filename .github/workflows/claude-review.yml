@@ -29,7 +29,6 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          show_full_output: true
 
           prompt: |
             REPO: ${{ github.repository }}
@@ -50,5 +49,16 @@ jobs:
             Only report issues that are useful for the author to address.
             Explain why each issue matters and suggest a fix when appropriate.
 
+            After completing the review, post a concise review summary as a
+            comment on this pull request using `gh pr comment`.
+
+            If you find issues, include them in the comment with their
+            severity, affected file or line when possible, explanation,
+            and suggested fix.
+
+            If you find no meaningful issues, post a short comment saying
+            that no actionable issues were found.
+
           claude_args: |
             --max-turns 10
+            --allowedTools "Read,Glob,Grep,Bash(git:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"
