@@ -1,0 +1,53 @@
+name: PR - Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request.
+
+            Focus on:
+            - Bugs and incorrect behavior
+            - Security issues
+            - Potential regressions
+            - Python best practices
+            - Maintainability
+            - Missing or inadequate tests
+
+            Ignore trivial formatting issues handled by Ruff.
+
+            Only report issues that are useful for the author to address.
+            Explain why each issue matters and suggest a fix when appropriate.
+
+          claude_args: |
+            --max-turns 10
