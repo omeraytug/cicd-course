@@ -1,6 +1,5 @@
 import yfinance as yf
 
-
 TICKERS = ["NVDA", "FDS", "XOM", "HAE", "JJSF"]
 
 
