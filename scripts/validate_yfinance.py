@@ -34,6 +34,43 @@ def validate_ticker(ticker: str) -> None:
 
     print(f"\nDuplicate dates: {history.index.duplicated().sum()}")
 
+    price_columns = ["Open", "High", "Low", "Close", "Adj Close"]
+
+    non_positive_prices = (history[price_columns] <= 0).sum()
+    print("\nNon-positive prices:")
+    print(non_positive_prices)
+
+    negative_volume = (history["Volume"] < 0).sum()
+    print(f"\nNegative volume rows: {negative_volume}")
+
+    invalid_high_mask = history["High"] < history[["Open", "Low", "Close"]].max(axis=1)
+
+    invalid_low_mask = history["Low"] > history[["Open", "High", "Close"]].min(axis=1)
+
+    invalid_high = invalid_high_mask.sum()
+    invalid_low = invalid_low_mask.sum()
+
+    print(f"Invalid High rows: {invalid_high}")
+    print(f"Invalid Low rows:  {invalid_low}")
+
+    if invalid_high > 0:
+        print("\nInvalid High observations:")
+        print(
+            history.loc[
+                invalid_high_mask,
+                ["Open", "High", "Low", "Close", "Volume"],
+            ]
+        )
+
+    if invalid_low > 0:
+        print("\nInvalid Low observations:")
+        print(
+            history.loc[
+                invalid_low_mask,
+                ["Open", "High", "Low", "Close", "Volume"],
+            ]
+        )
+
     if "Dividends" in history.columns:
         dividends = history[history["Dividends"] != 0]
 
