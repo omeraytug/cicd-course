@@ -30,62 +30,82 @@ clearly without designing the entire MLOps system upfront.
 Current direction: daily stock closing prices, with each stock modeled
 independently.
 
-- [ ] Choose between raw close and adjusted close as the main target.
-- [ ] Confirm horizons: `t+1`, `t+5`, and `t+20`.
-- [ ] Confirm that multi-step forecasts predict the complete
+- [x] Choose between raw close and adjusted close as the main target.
+- [x] Confirm horizons: `t+1`, `t+5`, and `t+20`.
+- [x] Confirm that multi-step forecasts predict the complete
       trajectory rather than only the endpoint.
-- [ ] Define exactly how trading days are handled.
+- [x] Define exactly how trading days are handled.
 
-A 5-day forecast should ideally produce:
+A forecast produces the complete trajectory through the requested horizon:
 
 ```text
 t+1
 t+2
 t+3
-t+4
-t+5
+...
+t+20
 ```
-
-rather than only the value at `t+5`.
-
-**Final target definition:** TBD
 
 ## 4. Define the information available to the models
 
-The core V1 benchmark should remain simple enough that every model can
-participate.
+The project will develop the forecasting problem progressively rather than
+fixing all possible regressors before modeling begins.
+
+### V1 — Historical price only
+
+The core V1 benchmark uses only the historical `Close` price of the stock
+being forecast.
 
 ```text
-Historical stock price
-        ↓
-      Model
-        ↓
-Future stock prices
+Historical Close
+      ↓
+    Model
+      ↓
+Future Close trajectory
 ```
 
-- [ ] Confirm historical price as the common V1 input.
-- [ ] Decide whether simple covariates should also be tested in V1.
-- [ ] Consider volume, broad-market returns, sector returns, and
-      calendar variables.
-- [ ] Establish strict rules preventing future information from
-      leaking into model inputs.
+- [x] Confirm historical price as the common V1 input.
+- [x] Keep V1 univariate and exclude exogenous variables.
+- [x] Establish that future information must not leak into model inputs.
 
-The price-only experiment should remain available even if additional
-covariates are later tested.
+### V2 — Simple exogenous variables
 
-**V1 input definition:** TBD
+V2 may introduce relatively easy-to-define external variables such as
+volume, market/sector information, or calendar features.
+The exact variables are deliberately not fixed yet. Their usefulness and
+compatibility with the selected models will be evaluated during model
+development.
+
+### V3 — Advanced exogenous variables (optional)
+
+V3 may explore more difficult financial, macroeconomic, event, news, or
+sentiment-based information.
+This is optional and is not required for the main project. The project is
+primarily a forecasting and MLOps study rather than an attempt to build a
+full quantitative trading system.
+
+**V1 input definition**: Historical Close price only.
 
 ## 5. Choose the baselines
 
-- [ ] Include at minimum a last-observed-price / random-walk-style
-      naive forecast.
-- [ ] Research whether additional simple forecasting baselines would
-      make the experiment more useful.
+- [x] Include a last-observed-price / random-walk naive forecast.
+- [x] Include a drift forecast.
+- [x] Include a conventional statistical forecasting baseline.
 
-The baseline is a sanity check: additional model complexity should
-demonstrate that it provides value.
+The primary baseline is the naive/random-walk forecast, which predicts the
+latest observed `Close` for every future horizon.
 
-**Selected baselines:** TBD
+A drift baseline extrapolates the average historical change in price,
+providing a second simple benchmark that allows for trend.
+
+ARIMA will be used as a conventional statistical forecasting baseline,
+providing a fitted time-series benchmark between the simple forecasts and
+the more advanced model approaches.
+
+All baselines will be evaluated using the same walk-forward framework and
+`t+1`, `t+5`, and `t+20` horizons as the main models.
+
+**Selected baselines:** Naive/random walk, drift, and ARIMA.
 
 ## 6. Research time-series foundation models
 
@@ -296,3 +316,7 @@ Start implementation
 The first task is:
 
 > **Choose and justify the stock basket.**
+
+```
+
+```
