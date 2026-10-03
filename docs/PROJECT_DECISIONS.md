@@ -62,15 +62,45 @@ The initial ingestion will backfill historical data, while later runs will fetch
 
 ## 3. Forecast Target
 
-_Not decided yet._
+**Target:** Daily `Close` price for each stock independently.
+
+Forecasts will be evaluated at `t+1`, `t+5`, and `t+20`, where horizons
+refer to U.S. market trading sessions rather than calendar days. Multi-step
+forecasts will predict the complete trajectory through the horizon rather
+than only the final endpoint.
+
+Forecasts should include point predictions together with predictive
+uncertainty where supported. The exact uncertainty representation and
+interval/quantile levels will be decided separately in Decision 11.
 
 ## 4. Model Inputs
 
-_Not decided yet._
+**V1:** Historical `Close` price only. Each stock is modeled independently
+without exogenous variables.
+
+**V2:** May introduce relatively simple exogenous variables. The exact
+features will be selected during experimentation based on their usefulness
+and model support rather than fixed in advance.
+
+**V3:** Optionally explores more advanced external information such as
+macroeconomic, event, news, or sentiment features. This is outside the core
+scope of the project and is not required for completion.
+
+Only the V1 input specification is currently locked. V2 and V3 are
+experimental directions and may change as the selected models are
+evaluated.
 
 ## 5. Baselines
 
-_Not decided yet._
+Three baselines will be used: **naive/random walk, drift, and ARIMA**.
+
+The naive forecast predicts the most recently observed `Close` throughout
+the forecast horizon. Drift provides a simple trend-extrapolation benchmark,
+while ARIMA provides a conventional fitted statistical forecasting
+benchmark.
+
+All baselines will use the same data and walk-forward evaluation framework
+as the main model approaches.
 
 ## 6. Foundation Model
 
